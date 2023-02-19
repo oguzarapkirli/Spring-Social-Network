@@ -1,4 +1,4 @@
-package com.example.springsocialnetwork;
+package com.oguzarapkirli.springsocialnetwork;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
