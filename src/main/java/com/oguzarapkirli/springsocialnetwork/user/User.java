@@ -2,6 +2,7 @@ package com.oguzarapkirli.springsocialnetwork.user;
 
 import com.oguzarapkirli.springsocialnetwork.token.Token;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,18 +18,23 @@ import java.util.Objects;
 @ToString
 @RequiredArgsConstructor
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "_user")
+@Table(name = "_user", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "username"),
+        @UniqueConstraint(columnNames = "email")
+})
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue
     private Integer id;
-    private String firstname;
-    private String lastname;
+
+    @NotNull
+    private String username;
+    @NotNull
     private String email;
+    @NotNull
     private String password;
 
     @Enumerated(EnumType.STRING)

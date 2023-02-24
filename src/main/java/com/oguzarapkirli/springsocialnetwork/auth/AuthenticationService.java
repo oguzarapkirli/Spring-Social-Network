@@ -1,12 +1,11 @@
 package com.oguzarapkirli.springsocialnetwork.auth;
 
 import com.oguzarapkirli.springsocialnetwork.config.JwtService;
+import com.oguzarapkirli.springsocialnetwork.token.Token;
 import com.oguzarapkirli.springsocialnetwork.token.TokenRepository;
 import com.oguzarapkirli.springsocialnetwork.user.Role;
 import com.oguzarapkirli.springsocialnetwork.user.User;
 import com.oguzarapkirli.springsocialnetwork.user.UserRepository;
-import com.oguzarapkirli.springsocialnetwork.token.Token;
-import com.oguzarapkirli.springsocialnetwork.token.TokenType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,9 +22,11 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
+        if(checkDuplicate(request))
+            throw new IllegalStateException("Email or Username already exists");
+
         var user = User.builder()
-                .firstname(request.getFirstname())
-                .lastname(request.getLastname())
+                .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
@@ -36,6 +37,11 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
+    }
+
+    private boolean checkDuplicate(RegisterRequest request) {
+        return repository.existsByUsername(request.getUsername()) ||
+                repository.existsByEmail(request.getEmail());
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -59,7 +65,6 @@ public class AuthenticationService {
         var token = Token.builder()
                 .user(user)
                 .token(jwtToken)
-                .tokenType(TokenType.BEARER)
                 .expired(false)
                 .revoked(false)
                 .build();

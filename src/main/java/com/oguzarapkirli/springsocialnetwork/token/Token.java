@@ -12,7 +12,6 @@ import java.util.Objects;
 @ToString
 @RequiredArgsConstructor
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 public class Token {
@@ -25,7 +24,7 @@ public class Token {
     public String token;
 
     @Enumerated(EnumType.STRING)
-    public TokenType tokenType = TokenType.BEARER;
+    public final TokenType tokenType = TokenType.BEARER;
 
     public boolean revoked;
 
